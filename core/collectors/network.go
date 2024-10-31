@@ -32,7 +32,7 @@ func PrintNetworkInfo() {
 	for _, iface := range networkCache.interfaces {
 		if len(iface.Addrs) > 0 {
 			displays.Cyan.Printf("   %s: ", iface.Name)
-			displays.White.Printf("%v\n", iface.Addrs[0].Addr)
+			displays.White.Printf("%v\n", iface.Addrs[1].Addr)
 		}
 	}
 }
