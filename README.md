@@ -16,7 +16,7 @@ A lightweight and colorful system monitoring tool written in Go that provides re
 ## 🚀 Installation
 
 ```bash
-git clone https://github.com/yourusername/system-monitor.git
+git clone https://github.com/idmaksim/go-system-monitor.git
 cd system-monitor
 go mod download
 go build
