@@ -1,18 +1,21 @@
 package collectors
 
 import (
-	"system-monitor/core/displays"
+	"system-monitor/core/types"
 
 	"github.com/shirou/gopsutil/host"
 )
 
-func PrintSystemInfo() {
+func GetSystemInfo(ch chan<- types.SystemInfo) {
 	hostInfo, err := host.Info()
 	if err != nil {
+		ch <- types.SystemInfo{Platform: "", Version: "", Hostname: "", Err: err}
 		return
 	}
-	displays.Cyan.Printf("\n💻 System: ")
-	displays.White.Printf("%s %s\n", hostInfo.Platform, hostInfo.PlatformVersion)
-	displays.Cyan.Printf("🏠 Hostname: ")
-	displays.White.Printf("%s\n", hostInfo.Hostname)
+	ch <- types.SystemInfo{
+		Platform: hostInfo.Platform,
+		Version:  hostInfo.PlatformVersion,
+		Hostname: hostInfo.Hostname,
+		Err:      nil,
+	}
 }

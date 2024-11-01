@@ -2,28 +2,18 @@ package collectors
 
 import (
 	"runtime"
-
-	"system-monitor/core/displays"
+	"system-monitor/core/types"
 
 	"github.com/shirou/gopsutil/cpu"
 )
 
-func PrintCPUInfo() {
+func GetCPUInfo(ch chan<- types.CPUInfo) {
 	cpuPercent, err := cpu.Percent(0, false)
-	if err == nil {
-		usage := cpuPercent[0]
-
-		displays.Cyan.Printf("\n🔄 CPU: ")
-		switch {
-		case usage >= 80:
-			displays.Red.Printf("%.1f%%", usage)
-		case usage >= 60:
-			displays.Yellow.Printf("%.1f%%", usage)
-		default:
-			displays.Green.Printf("%.1f%%", usage)
-		}
-
-		displays.Cyan.Printf(" (Cores: ")
-		displays.White.Printf("%d)\n", runtime.NumCPU())
+	if err != nil {
+		ch <- types.CPUInfo{Usage: 0, Cores: 0, Err: err}
+		return
 	}
+	usage := cpuPercent[0]
+	cores := runtime.NumCPU()
+	ch <- types.CPUInfo{Usage: usage, Cores: cores, Err: nil}
 }

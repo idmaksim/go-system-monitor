@@ -2,26 +2,19 @@ package collectors
 
 import (
 	"math"
-	"system-monitor/core/displays"
+
+	"system-monitor/core/types"
 
 	"github.com/shirou/gopsutil/mem"
 )
 
-func PrintMemoryInfo() {
+func GetMemoryInfo(ch chan<- types.MemoryInfo) {
 	vmStat, err := mem.VirtualMemory()
-	if err == nil {
-		displays.Cyan.Printf("\n💾 Memory:\n")
-		displays.Cyan.Printf("   Total: ")
-		displays.White.Printf("%.2f GB\n", float64(vmStat.Total)/math.Pow(1024, 3))
-		displays.Cyan.Printf("   Used: ")
-
-		switch {
-		case vmStat.UsedPercent >= 80:
-			displays.Red.Printf("%d%%\n", int(vmStat.UsedPercent))
-		case vmStat.UsedPercent >= 60:
-			displays.Yellow.Printf("%d%%\n", int(vmStat.UsedPercent))
-		default:
-			displays.Green.Printf("%d%%\n", int(vmStat.UsedPercent))
-		}
+	if err != nil {
+		ch <- types.MemoryInfo{Total: 0, Used: 0, Err: err}
+		return
 	}
+	total := float64(vmStat.Total) / math.Pow(1024, 3)
+	used := int(vmStat.UsedPercent)
+	ch <- types.MemoryInfo{Total: total, Used: used, Err: nil}
 }

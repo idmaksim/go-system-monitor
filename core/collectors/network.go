@@ -1,38 +1,32 @@
 package collectors
 
 import (
-	"system-monitor/core/displays"
+	"system-monitor/core/types"
 	"time"
 
 	"github.com/shirou/gopsutil/net"
 )
 
 type NetworkCache struct {
-	interfaces []net.InterfaceStat
-	lastUpdate time.Time
+	Interfaces []net.InterfaceStat
+	LastUpdate time.Time
 }
 
 var networkCache = NetworkCache{
-	lastUpdate: time.Time{},
+	LastUpdate: time.Time{},
 }
 
 const networkCacheTTL = 30 * time.Second
 
-func PrintNetworkInfo() {
-	if time.Since(networkCache.lastUpdate) > networkCacheTTL {
+func GetNetworkInfo(ch chan<- types.NetworkInfo) {
+	if time.Since(networkCache.LastUpdate) > networkCacheTTL {
 		interfaces, err := net.Interfaces()
-		if err == nil {
-			networkCache.interfaces = interfaces
-			networkCache.lastUpdate = time.Now()
+		if err != nil {
+			ch <- types.NetworkInfo{Interfaces: nil, Err: err}
+			return
 		}
+		networkCache.Interfaces = interfaces
+		networkCache.LastUpdate = time.Now()
 	}
-
-	displays.Cyan.Printf("\n🌐 Network Interfaces:\n")
-
-	for _, iface := range networkCache.interfaces {
-		if len(iface.Addrs) > 0 {
-			displays.Cyan.Printf("   %s: ", iface.Name)
-			displays.White.Printf("%v\n", iface.Addrs[1].Addr)
-		}
-	}
+	ch <- types.NetworkInfo{Interfaces: networkCache.Interfaces, Err: nil}
 }

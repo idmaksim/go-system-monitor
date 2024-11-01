@@ -38,6 +38,7 @@ The monitor shows:
 - Disk usage for all mounted partitions
 - System load averages (1, 5, and 15 minutes)
 - Network interfaces with IP addresses
+- Temperature sensors (with admin privileges)
 
 ## 🎨 Color Coding
 

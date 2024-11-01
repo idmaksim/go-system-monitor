@@ -1,18 +1,21 @@
 package collectors
 
 import (
-	"system-monitor/core/displays"
+	"system-monitor/core/types"
 
 	"github.com/shirou/gopsutil/load"
 )
 
-func PrintLoadAverage() {
+func GetLoadAverage(ch chan<- types.LoadAverage) {
 	loadStat, err := load.Avg()
-	if err == nil {
-		displays.Cyan.Printf("\n📊 Load Average: ")
-		displays.White.Printf("%.2f %.2f %.2f\n",
-			loadStat.Load1,
-			loadStat.Load5,
-			loadStat.Load15)
+	if err != nil {
+		ch <- types.LoadAverage{Load1: 0, Load5: 0, Load15: 0, Err: err}
+		return
+	}
+	ch <- types.LoadAverage{
+		Load1:  loadStat.Load1,
+		Load5:  loadStat.Load5,
+		Load15: loadStat.Load15,
+		Err:    nil,
 	}
 }
