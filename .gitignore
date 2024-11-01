@@ -11,14 +11,6 @@
 # Dependency directories (remove the comment below if you use Go modules)
 vendor/
 
-# Go workspace file
-go.work
-go.work.sum
-
-# Go module files
-go.mod
-go.sum
-
 # Executable files
 *.exe
 *.out
